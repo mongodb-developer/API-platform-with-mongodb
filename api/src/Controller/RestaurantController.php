@@ -30,7 +30,7 @@ class RestaurantController extends AbstractController
         $restaurant->setName($data['name']);
         $restaurant->setAddress($data['address']);
         $restaurant->setBorough($data['borough']);
-        $restaurant->setcusine($data['cuisine']);
+        $restaurant->setcuisine($data['cuisine']);
         
         $this->restaurantRepository->save($restaurant);
 
@@ -66,7 +66,7 @@ class RestaurantController extends AbstractController
 
         $restaurant->setAddress($data['address']);
         $restaurant->setBorough($data['borough']);
-        $restaurant->setcusine($data['cuisine']);
+        $restaurant->setcuisine($data['cuisine']);
         $restaurant->setName($data['name']);
         $this->restaurantRepository->save($restaurant);
 

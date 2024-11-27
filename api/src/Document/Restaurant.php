@@ -24,7 +24,7 @@ class Restaurant
     public string $borough;
 
     #[Field]
-    public string $cusine;
+    public string $cuisine;
    
     public function __construct()
     {}
@@ -46,9 +46,9 @@ public function getborough(): string
 {
     return $this->borough;
 }
-public function getcusine(): string
+public function getcuisine(): string
 {
-    return $this->cusine;
+    return $this->cuisine;
 
 }
 public function setId($id): void {
@@ -67,9 +67,9 @@ public function setName(string $name): void
     {
         $this->borough = $borough;
     }
-    public function setcusine(string $cusine): void
+    public function setcuisine(string $cuisine): void
     {
-        $this->cusine = $cusine;
+        $this->cuisine = $cuisine;
     }
     
 }

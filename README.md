@@ -1,47 +1,232 @@
-<h1 align="center"><a href="https://api-platform.com"><img src="https://api-platform.com/images/logos/Logo_Circle%20webby%20text%20blue.png" alt="API Platform" width="250" height="250"></a></h1>
+# How to Build REST APIs with API Platform and MongoDB
 
-API Platform is a next-generation web framework designed to easily create API-first projects without compromising extensibility
-and flexibility:
+## Introduction
 
-* Design your own data model as plain old PHP classes or [**import an existing ontology**](https://api-platform.com/docs/schema-generator).
-* **Expose in minutes a hypermedia REST or a GraphQL API** with pagination, data validation, access control, relation embedding,
-  filters, and error handling...
-* Benefit from Content Negotiation: [GraphQL](https://api-platform.com/docs/core/graphql/), [JSON-LD](https://json-ld.org), [Hydra](https://hydra-cg.com),
-  [HAL](https://github.com/mikekelly/hal_specification/blob/master/hal_specification.md), [JSON:API](https://jsonapi.org/), [YAML](https://yaml.org/), [JSON](https://www.json.org/), [XML](https://www.w3.org/XML/) and [CSV](https://www.ietf.org/rfc/rfc4180.txt) are supported out of the box.
-* Enjoy the **beautiful automatically generated API documentation** ([OpenAPI](https://api-platform.com/docs/core/openapi/)).
-* Add [**a convenient Material Design administration interface**](https://api-platform.com/docs/admin) built with [React](https://reactjs.org/)
-  without writing a line of code.
-* **Scaffold fully functional Progressive-Web-Apps and mobile apps** built with [Next.js](https://api-platform.com/docs/client-generator/nextjs/) (React),
-[Nuxt.js](https://api-platform.com/docs/client-generator/nuxtjs/) (Vue.js) or [React Native](https://api-platform.com/docs/client-generator/react-native/)
-thanks to [the client generator](https://api-platform.com/docs/client-generator/) (a Vue.js generator is also available).
-* Install a development environment and deploy your project in production using **[Docker](https://api-platform.com/docs/distribution)**
-and [Kubernetes](https://api-platform.com/docs/deployment/kubernetes).
-* Easily add **[OAuth](https://oauth.net/) authentication**.
-* Create specs and tests with **[a developer friendly API testing tool](https://api-platform.com/docs/distribution/testing/)**.
+Modern web applications rely heavily on real-time database interactions and efficient management of large datasets. However, developers often face challenges in handling dynamic, unstructured data while maintaining performance, scalability, and flexibility. Combining **Symfony's API Platform** with **MongoDB** simplifies the process of building robust, flexible, and secure REST APIs. 
 
-The official project documentation is available **[on the API Platform website](https://api-platform.com)**.
+In this project, we demonstrate how to:
+- Build REST APIs using **Symfony's API Platform**.
+- Perform CRUD (Create, Read, Update, Delete) operations.
+- Connect the application to **MongoDB Atlas**.
 
-API Platform embraces open web standards and the
-[Linked Data](https://www.w3.org/standards/semanticweb/data) movement. Your API will automatically expose structured data.
-It means that your API Platform application is usable **out of the box** with technologies of
-the semantic web.
+By the end of this tutorial, you’ll have a working application capable of efficiently managing database interactions using the API Platform with MongoDB.
 
-It also means that **your SEO will be improved** because **[Google leverages these formats](https://developers.google.com/search/docs/guides/intro-structured-data)**.
+---
 
-Last but not least, the server component of API Platform is built on top of the [Symfony](https://symfony.com) framework,
-while client components leverage [React](https://reactjs.org/) ([Vue.js](https://vuejs.org/) flavors are also available).
-It means that you can:
+## Prerequisites
 
-* Use **thousands of Symfony bundles and React components** with API Platform.
-* Integrate API Platform in **any existing Symfony, React, or Vue application**.
-* Reuse **all your Symfony and JavaScript skills**, and benefit from the incredible amount of documentation available.
-* Enjoy the popular [Doctrine ORM](https://www.doctrine-project.org/projects/orm.html) (used by default, but fully optional:
-  you can use the data provider you want, including but not limited to MongoDB and Elasticsearch)
+Before starting, ensure you have the following:
+- **A free MongoDB Atlas cluster**: [Register and create your first free cluster](https://www.mongodb.com/cloud/atlas).
+- **PHP 8.x or higher**.
+- **Docker** installed for containerized development.
 
-## Install
+---
 
-[Read the official "Getting Started" guide](https://api-platform.com/docs/distribution/).
+## Steps to Build the Application
 
-## Credits
+### 1. Setting Up the Symfony Project
 
-Created by [Kévin Dunglas](https://dunglas.fr). Commercial support is available at [Les-Tilleuls.coop](https://les-tilleuls.coop).
+1. Create a new GitHub repository for your project.
+2. Clone the repository locally:
+   ```bash
+   git clone <repository_url>
+   ```
+3. Generate a Symfony project with the API Platform:
+   ```bash
+   composer create-project symfony/skeleton my_project
+   cd my_project
+   composer require api
+   ```
+
+### 2. Connecting the Application to MongoDB
+
+#### Option 1: Using Docker
+1. Add a MongoDB service to your `docker-compose.yml` file:
+   ```yaml
+   services:
+     mongodb:
+       image: mongo
+       container_name: mongodb
+       ports:
+         - "27017:27017"
+       environment:
+         MONGO_INITDB_ROOT_USERNAME: root
+         MONGO_INITDB_ROOT_PASSWORD: example
+   ```
+2. Start the Docker containers:
+   ```bash
+   docker-compose up -d
+   ```
+
+#### Option 2: Using MongoDB Atlas
+1. Create a free Atlas cluster and retrieve your connection string.
+2. Update your `.env` file:
+   ```env
+   MONGODB_URL=<your_atlas_connection_string>
+   MONGODB_DB=<database_name>
+   ```
+3. Install the MongoDB ODM bundle:
+   ```bash
+   docker compose exec php composer require doctrine/mongodb-odm-bundle
+   ```
+
+---
+
+### 3. Defining a Document Class
+
+Create a document class to map the MongoDB schema. For example, a **Restaurant** document might look like this:
+
+```php
+<?php
+
+namespace App\Document;
+
+use ApiPlatform\Metadata\ApiResource;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+
+#[ApiResource]
+#[Document]
+class Restaurant
+{
+    #[Id]
+    public string $id;
+
+    #[Field]
+    public string $name;
+
+    #[Field]
+    public string $address;
+
+    #[Field]
+    public string $borough;
+
+    #[Field]
+    public string $cuisine;
+}
+```
+
+---
+
+### 4. CRUD Operations with API Platform
+
+#### Create
+Define a POST endpoint in the `RestaurantController`:
+
+```php
+public function create(Request $request): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
+
+    $restaurant = new Restaurant();
+    $restaurant->name = $data['name'];
+    $restaurant->address = $data['address'];
+    $restaurant->borough = $data['borough'];
+    $restaurant->cuisine = $data['cuisine'];
+    
+    $this->documentManager->persist($restaurant);
+    $this->documentManager->flush();
+
+    return new JsonResponse(['status' => 'Restaurant created!'], JsonResponse::HTTP_CREATED);
+}
+```
+
+#### Read
+Retrieve a document by ID:
+
+```php
+public function read(string $id): JsonResponse
+{
+    $restaurant = $this->repository->find($id);
+
+    if (!$restaurant) {
+        return new JsonResponse(['error' => 'Not found'], JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    return new JsonResponse($restaurant);
+}
+```
+
+#### Update
+Modify an existing document:
+
+```php
+public function update(string $id, Request $request): JsonResponse
+{
+    $restaurant = $this->repository->find($id);
+
+    if (!$restaurant) {
+        return new JsonResponse(['error' => 'Not found'], JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    $data = json_decode($request->getContent(), true);
+    $restaurant->name = $data['name'];
+    $restaurant->address = $data['address'];
+    $restaurant->borough = $data['borough'];
+    $restaurant->cuisine = $data['cuisine'];
+
+    $this->documentManager->flush();
+
+    return new JsonResponse(['status' => 'Restaurant updated!']);
+}
+```
+
+#### Delete
+Remove a document by ID:
+
+```php
+public function delete(string $id): JsonResponse
+{
+    $restaurant = $this->repository->find($id);
+
+    if (!$restaurant) {
+        return new JsonResponse(['error' => 'Not found'], JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    $this->documentManager->remove($restaurant);
+    $this->documentManager->flush();
+
+    return new JsonResponse(['status' => 'Restaurant deleted']);
+}
+```
+
+---
+
+### 5. Testing the APIs
+
+1. Start the application:
+   ```bash
+   docker-compose up
+   ```
+2. Access the API documentation at:
+   ```
+   http://localhost:8080/docs
+   ```
+3. Test the endpoints using tools like **Postman**, **cURL**, or the interactive API docs.
+
+---
+
+## Sample Data
+
+Example of a restaurant document:
+
+```json
+{
+  "name": "Spice of India",
+  "address": "73-10 Grand Ave, Maspeth, NY 11378",
+  "borough": "Queens",
+  "cuisine": "Indian"
+}
+```
+
+---
+
+## Conclusion
+
+By using **Symfony's API Platform** and **MongoDB**, you can efficiently manage RESTful APIs for dynamic and unstructured data. This combination provides:
+- Scalability.
+- Simplified CRUD operations.
+- Seamless integration with MongoDB Atlas or Docker-based MongoDB setups.
+
+Explore the repository for more advanced features like query optimization and schema evolution. Feel free to extend this project to suit your application's needs!

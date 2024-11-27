@@ -1,5 +1,6 @@
 {
     "require": {
-        "doctrine/mongodb-odm-bundle": "^5.0"
+        "doctrine/mongodb-odm-bundle": "^5.0",
+        "nelmio/api-doc-bundle": "^4.33"
     }
 }

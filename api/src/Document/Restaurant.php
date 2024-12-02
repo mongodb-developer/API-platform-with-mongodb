@@ -2,75 +2,43 @@
 
 namespace App\Document;
 
+use ApiPlatform\Doctrine\Odm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use App\Repository\RestaurantRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
-#[Document]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'name' => 'ipartial', // The "ipartial" strategy will use a case-insensitive partial match
+        'cuisine' => 'exact', // The "exact" strategy will use an exact match
+    ])
+]
+#[Document(collection: 'restaurants', repositoryClass: RestaurantRepository::class)]
 class Restaurant
 {
     #[Id]
     public string $id;
 
     #[Field]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     public string $name;
 
-    #[Field]
-    public string $address;
+    #[EmbedOne(targetDocument: Address::class)]
+    public ?Address $address;
 
     #[Field]
+    #[Assert\NotBlank]
     public string $borough;
 
     #[Field]
+    #[Assert\NotBlank]
     public string $cuisine;
-   
-    public function __construct()
-    {}
-
-public function getId(): string
-{
-    return $this->id;
 }
-public function getName(): string
-{
-    return $this->name;
-}
-public function getAddress(): string
-{
-    return $this->address;
-
-}
-public function getborough(): string
-{
-    return $this->borough;
-}
-public function getcuisine(): string
-{
-    return $this->cuisine;
-
-}
-public function setId($id): void {
-    $this->id = $id;
-}
-public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-    public function setAddress(string $address): void
-    {
-        $this->address = $address;
-    }
-
-    public function setborough(string $borough): void
-    {
-        $this->borough = $borough;
-    }
-    public function setcuisine(string $cuisine): void
-    {
-        $this->cuisine = $cuisine;
-    }
-    
-}
-

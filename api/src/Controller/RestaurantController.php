@@ -31,7 +31,7 @@ class RestaurantController extends AbstractController
         $restaurant->setAddress($data['address']);
         $restaurant->setBorough($data['borough']);
         $restaurant->setcuisine($data['cuisine']);
-        
+
         $this->restaurantRepository->save($restaurant);
 
         return new JsonResponse(['status' => 'Restaurant created!'], JsonResponse::HTTP_CREATED);

@@ -25,52 +25,58 @@ class Restaurant
 
     #[Field]
     public string $cuisine;
-   
+
     public function __construct()
-    {}
+    {
+    }
 
-public function getId(): string
-{
-    return $this->id;
-}
-public function getName(): string
-{
-    return $this->name;
-}
-public function getAddress(): string
-{
-    return $this->address;
+    public function getId(): string
+    {
+        return $this->id;
+    }
 
-}
-public function getborough(): string
-{
-    return $this->borough;
-}
-public function getcuisine(): string
-{
-    return $this->cuisine;
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
-}
-public function setId($id): void {
-    $this->id = $id;
-}
-public function setName(string $name): void
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    public function getBorough(): string
+    {
+        return $this->borough;
+    }
+
+    public function getCuisine(): string
+    {
+        return $this->cuisine;
+    }
+
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
+
     public function setAddress(string $address): void
     {
         $this->address = $address;
     }
 
-    public function setborough(string $borough): void
+    public function setBorough(string $borough): void
     {
         $this->borough = $borough;
     }
-    public function setcuisine(string $cuisine): void
+
+    public function setCuisine(string $cuisine): void
     {
         $this->cuisine = $cuisine;
     }
-    
 }
-

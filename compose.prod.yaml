@@ -13,7 +13,3 @@ services:
     build:
       context: ./pwa
       target: prod
-
-  database:
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

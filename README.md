@@ -45,13 +45,12 @@ Before starting, ensure you have the following:
    ```yaml
    services:
      mongodb:
-       image: mongo
-       container_name: mongodb
+       image: mongodb/mongodb-atlas-local:latest
        ports:
          - "27017:27017"
        environment:
-         MONGO_INITDB_ROOT_USERNAME: root
-         MONGO_INITDB_ROOT_PASSWORD: example
+         MONGODB_INITDB_ROOT_USERNAME: root
+         MONGODB_INITDB_ROOT_PASSWORD: example
    ```
 2. Start the Docker containers:
    ```bash

@@ -33,6 +33,10 @@ services:
       # On Linux, you may want to comment the following line for improved performance
       WATCHPACK_POLLING: "true"
 
+  mongodb:
+    ports:
+      - "27017"
+
 ###> doctrine/doctrine-bundle ###
 
 ###< doctrine/doctrine-bundle ###

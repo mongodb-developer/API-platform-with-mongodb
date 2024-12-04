@@ -32,6 +32,7 @@ class Restaurant
     public string $name;
 
     #[EmbedOne(targetDocument: Address::class)]
+    #[Assert\Valid]
     public ?Address $address;
 
     #[Field]

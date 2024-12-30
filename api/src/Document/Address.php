@@ -4,8 +4,6 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Symfony\Component\Validator\Constraints as Assert;
-
 use App\Validator\Constraints\ValidZipCode;
 
 #[EmbeddedDocument]
